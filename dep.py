@@ -1,4 +1,5 @@
 from openai import OpenAI
+import json
 def get_completion(prompt):
     client = OpenAI()
     completion = client.chat.completions.create(
@@ -17,15 +18,34 @@ def getDepth(code):
     return int(ans)
 
 def codeDecomposition(code):
-    # break code into subcodes using AST. ast in python can only be used for python files. check clang for c/c++ files
+    # break code into subcodes using AST. ast in python can only be used for python files. 
     # suggested by chatGPT
     # return a list of the subcodes
+    prompt=f""" You are given a code snippet. You need to break the code into subcodes. One subcode ends and another subcode starts when there is a loop, defining a class, defining a function/method, a conditional using if-else or a switch call. Only decompose codes on the initial level of the code's AST. Whatever is nested inside the first level is part of the subcode. The decomposition must be exhaustive, ensuring that every line, symbol, and punctuation mark in the original code is explicitly included in one of the defined subcodes, leaving no element unaccounted for. Return the subcodes in a JSON format with the key 'subcodes' and the corresonding value to be array of the subcodes. Do not attach any pre or post text like subcodes are etc. DO NOT alter the code in any way,shape or form. Just return the exact sub code snippet in the array.    ```{code}```
+    """
+    json_string = get_completion(prompt)
+    data=json.loads(json_string)
+    ans=data['subcodes']
+    return ans
+
 def getDependencies(code):
     # get the dependencies of the code
     # return a list of dependencies
 def retrieveSemantics(dependencies):
     # get the semantics of the dependencies
     # return a dictionary of the dependencies and their semantics
+    """If the code is semantically correct, each external
+    dependency should have been previously analyzed and exist in
+    the Semantic Dependency Decoupling Storage unit. We simply
+    need to search and retrieve the semantics associated with
+    each external dependency variable. The semantic descriptions
+    (DPsemantics) of these external dependencies, retrieved from
+    the Semantic Dependency Decoupling Storage unit, is then
+    combined with the SC and inputted into the LLM for analysis."""
+   
+
+
+"""
 def LLM(code,dependencies,subCodesSemantics=None):
     # use the LLM to get the semantics of the code
     # return the semantics of the code
@@ -35,7 +55,7 @@ def updateSemantic(dependency,subCodesSemantic):
 def summarizeSemantic(subCodesSemantics):
     # summarize the semantics of the subcodes
     # return the summarized semantic
-
+"""
     
 def getSemantic(code):
     storage={}
@@ -56,6 +76,8 @@ def getSemantic(code):
             storage.update(newDependency)
     codeSemantic=summarizeSemantic(subCodesSemantics)
     return codeSemantic    
+
+
 
  
 
