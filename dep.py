@@ -10,6 +10,7 @@ def get_completion(prompt):
     ]
     )
     return (completion.choices[0].message.content)
+
 def getDepth(code):
     # get the depth of the code
     # return the depth
@@ -31,6 +32,7 @@ def codeDecomposition(code):
 def getDependencies(code):
     # get the dependencies of the code
     # return a list of dependencies
+
 def retrieveSemantics(dependencies):
     # get the semantics of the dependencies
     # return a dictionary of the dependencies and their semantics
@@ -42,20 +44,33 @@ def retrieveSemantics(dependencies):
     (DPsemantics) of these external dependencies, retrieved from
     the Semantic Dependency Decoupling Storage unit, is then
     combined with the SC and inputted into the LLM for analysis."""
-   
+    dependencySemantics={}
+    for DP in dependencies:
+        if DP in storage:
+            dependencySemantics[DP]=storage[DP]
+        else :
+            print(f"Dependency not found in storage for {DP}")            
+    return dependencySemantics
 
-
-"""
 def LLM(code,dependencies,subCodesSemantics=None):
     # use the LLM to get the semantics of the code
     # return the semantics of the code
+
 def updateSemantic(dependency,subCodesSemantic):
     # update the semantic of the dependency using the semantic of the subcodes
     # return the updated semantic
+    prompt=f"""You are given the semantic of a dependency and the semantic of the subcode. Using these semantics, update the semantic of the dependency. The semantic of the dependency is delimited by triple backticks. The semantic of the subcode is delimited by double backticks. Return the updated semantic of the dependency. Do not attach any pre or post text like semantics are etc. Semantics of the dependency: ```{dependency}``` Semantics of the subcode: ``{subCodesSemantic}``  """
+    ans = get_completion(prompt)
+    return ans
+
+
 def summarizeSemantic(subCodesSemantics):
     # summarize the semantics of the subcodes
     # return the summarized semantic
-"""
+    prompt=f"""You are given semantics of various subcodes. Using these semantics, summarize the semantics of the entire code. The semantics of the subcodes are delimited by triple backticks and are given as a list. Return the summarized semantics of the entire code. Do not attach any pre or post text like semantics are etc. ``````{subCodesSemantics}`````  """
+    ans = get_completion(prompt)
+    return ans
+
     
 def getSemantic(code):
     storage={}
